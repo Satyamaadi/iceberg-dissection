@@ -1,0 +1,89 @@
+{
+  "format-version" : 2,
+  "table-uuid" : "876b3a5c-58f1-4260-b2e0-f21966725787",
+  "location" : "file:///app/warehouse/dw_customers",
+  "last-sequence-number" : 1,
+  "last-updated-ms" : 1777115085586,
+  "last-column-id" : 5,
+  "current-schema-id" : 0,
+  "schemas" : [ {
+    "type" : "struct",
+    "schema-id" : 0,
+    "fields" : [ {
+      "id" : 1,
+      "name" : "customer_id",
+      "required" : false,
+      "type" : "string"
+    }, {
+      "id" : 2,
+      "name" : "name",
+      "required" : false,
+      "type" : "string"
+    }, {
+      "id" : 3,
+      "name" : "email",
+      "required" : false,
+      "type" : "string"
+    }, {
+      "id" : 4,
+      "name" : "signup_date",
+      "required" : false,
+      "type" : "timestamptz"
+    }, {
+      "id" : 5,
+      "name" : "country",
+      "required" : false,
+      "type" : "string"
+    } ]
+  } ],
+  "default-spec-id" : 0,
+  "partition-specs" : [ {
+    "spec-id" : 0,
+    "fields" : [ ]
+  } ],
+  "last-partition-id" : 999,
+  "default-sort-order-id" : 0,
+  "sort-orders" : [ {
+    "order-id" : 0,
+    "fields" : [ ]
+  } ],
+  "properties" : {
+    "owner" : "root",
+    "write.parquet.compression-codec" : "zstd"
+  },
+  "current-snapshot-id" : 3215436195144239653,
+  "refs" : {
+    "main" : {
+      "snapshot-id" : 3215436195144239653,
+      "type" : "branch"
+    }
+  },
+  "snapshots" : [ {
+    "sequence-number" : 1,
+    "snapshot-id" : 3215436195144239653,
+    "timestamp-ms" : 1777115085586,
+    "summary" : {
+      "operation" : "append",
+      "spark.app.id" : "local-1777115079779",
+      "added-data-files" : "12",
+      "added-records" : "20",
+      "added-files-size" : "19081",
+      "changed-partition-count" : "1",
+      "total-records" : "20",
+      "total-files-size" : "19081",
+      "total-data-files" : "12",
+      "total-delete-files" : "0",
+      "total-position-deletes" : "0",
+      "total-equality-deletes" : "0"
+    },
+    "manifest-list" : "file:/app/warehouse/dw_customers/metadata/snap-3215436195144239653-1-df61fd50-0650-47dd-8e50-bfd0491a3432.avro",
+    "schema-id" : 0
+  } ],
+  "statistics" : [ ],
+  "partition-statistics" : [ ],
+  "snapshot-log" : [ {
+    "timestamp-ms" : 1777115085586,
+    "snapshot-id" : 3215436195144239653
+  } ],
+  "metadata-log" : [ ]
+}
