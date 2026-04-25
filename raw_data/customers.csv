@@ -1,0 +1,21 @@
+customer_id,name,email,signup_date,country
+C001,Arjun Sharma,arjun@gmail.com,2023-01-15,India
+C002,Priya Singh,priya@gmail.com,15-02-2023,India
+C003,Rahul Verma,rahul.verma@gmail.com,2023/03/01,India
+C004,,neha@gmail.com,2023-03-10,India
+C005,Amit Kumar,amit@gmail,2023-04-05,India
+C006,Sneha Patel,sneha.patel@gmail.com,2023-04-12,India
+C007,Rohit Mehta,rohit@gmail.com,2023-04-20,India
+C008,Kavita Joshi,kavita@gmail,2023-05-01,India
+C009,Ankit Gupta,ankit@gmail.com,01-05-2023,India
+C010,Meera Iyer,meera.iyer@gmail.com,2023/05/10,India
+C011,Deepak Yadav,deepak@gmail.com,2023-05-15,India
+C012,Pooja Singh,pooja@gmail.com,2023-05-20,India
+C013,Manish Kumar,,2023-05-25,India
+C014,Alok Verma,alok.verma@gmail.com,2023-06-01,India
+C015,Nisha Sharma,nisha@gmail.com,2023-06-05,India
+C016,Varun Gupta,varun@gmail.com,2023-06-10,India
+C017,Ritu Singh,ritu@gmail.com,2023/06/15,India
+C018,Sanjay Mishra,sanjay@gmail.com,2023-06-20,India
+C019,Neha Kapoor,neha.kapoor@gmail.com,20-06-2023,India
+C020,,unknown@gmail.com,2023-06-25,India

@@ -1,0 +1,21 @@
+product_id,product_name,category,price
+P001,Mobile Phone,Electronics,15000
+P002,Laptop,Electronics,55000
+P003,T-shirt,Clothing,800
+P004,Headphones,Electronics,
+P005,Shoes,Footwear,2000
+P006,Watch,Accessories,3000
+P007,Backpack,Accessories,1200
+P008,Tablet,Electronics,22000
+P009,Camera,Electronics,45000
+P010,Keyboard,Electronics,1500
+P011,Mouse,Electronics,700
+P012,Jeans,Clothing,1800
+P013,Jacket,Clothing,3500
+P014,Sandals,Footwear,1200
+P015,Sneakers,Footwear,2500
+P016,Sunglasses,Accessories,900
+P017,Smart TV,Electronics,60000
+P018,Power Bank,Electronics,1200
+P019,Charger,Electronics,500
+P020,Earbuds,Electronics,2500
