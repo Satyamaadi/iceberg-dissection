@@ -6,7 +6,9 @@ A practical deep-dive into how Apache Iceberg works internally. This project dem
 
 ---
 
-## 📋 Project Intent & Approach
+<details>
+<summary><strong>📋 Project Intent & Approach</strong></summary>
+<br>
 
 ### The Dissection Goal
 
@@ -35,9 +37,13 @@ This demonstrates transformation logic while keeping the ETL code readable.
 
 Required careful configuration of Spark and Iceberg JARs. This complexity is intentional - it shows the machinery behind Iceberg and makes the metadata system visible and understandable.
 
+</details>
+
 ---
 
-## 🏗️ Apache Iceberg: Data vs Metadata
+<details>
+<summary><strong>🏗️ Apache Iceberg: Data vs Metadata</strong></summary>
+<br>
 
 Apache Iceberg fundamentally changes how data warehouses work by separating concerns into **two distinct layers**:
 
@@ -99,13 +105,21 @@ dw_orders/metadata/
 └── ... (more snapshots and manifests)
 ```
 
+</details>
+
 ---
 
-## 📁 Metadata File System Deep Dive
+<details>
+<summary><strong>📁 Metadata File System Deep Dive</strong></summary>
+<br>
 
 This is the **core** of Iceberg. Understanding these files is understanding Iceberg itself.
 
-### 1. vX.metadata.json - Root Metadata File
+---
+
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>1. vX.metadata.json — Root Metadata File</strong></summary>
+<br>
 
 **The most important file.** This is the entry point to everything.
 
@@ -189,9 +203,13 @@ This is the **core** of Iceberg. Understanding these files is understanding Iceb
 - Field IDs allow schema evolution (columns can be added/removed)
 - Snapshot references enable point-in-time queries
 
+</details>
+
 ---
 
-### 2. snap-*.avro - Manifest List
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>2. snap-*.avro — Manifest List</strong></summary>
+<br>
 
 **Links a snapshot to its manifest files.**
 
@@ -233,9 +251,13 @@ partitions: [
 - Partition pruning: Can filter manifests by partition value
 - Snapshot isolation: Each snapshot has its own manifest list
 
+</details>
+
 ---
 
-### 3. *-m0.avro - Manifest Entry File
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>3. *-m0.avro — Manifest Entry File</strong></summary>
+<br>
 
 **The actual file listing. This tells Iceberg which Parquet files to read.**
 
@@ -312,9 +334,13 @@ partitions: [
 - Status tracking supports delete operations
 - Column statistics enable predicate pushdown
 
+</details>
+
 ---
 
-### 4. version-hint.text - Fast Pointer
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>4. version-hint.text — Fast Pointer</strong></summary>
+<br>
 
 **Optimization file for quick metadata discovery.**
 
@@ -342,51 +368,55 @@ partitions: [
 8. Gets list of Parquet files to read
 ```
 
+```
+            ┌───────────────────────┐
+            │   Query Engine        │
+            │ (Spark / Athena)      │
+            └──────────┬────────────┘
+                       │
+                       ▼
+            ┌───────────────────────┐
+            │ version-hint.text     │
+            │ (latest version = vN) │
+            └──────────┬────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │ vN.metadata.json           │
+            │ - schema                   │
+            │ - partition spec           │
+            │ - current snapshot ID      │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │ snap-XXXX.avro             │
+            │ (snapshot manifest list)   │
+            │ - list of manifests        │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │ manifest files (*-m0.avro) │
+            │ - list of data files       │
+            │ - partition stats         │
+            │ - min/max values          │
+            └──────────┬─────────────────┘
+                       │
+                       ▼
+            ┌────────────────────────────┐
+            │ Data files (Parquet)       │
+            │ - actual table data        │
+            └────────────────────────────┘
+```
 
-                ┌───────────────────────┐
-                │   Query Engine        │
-                │ (Spark / Athena)      │
-                └──────────┬────────────┘
-                           │
-                           ▼
-                ┌───────────────────────┐
-                │ version-hint.text     │
-                │ (latest version = vN) │
-                └──────────┬────────────┘
-                           │
-                           ▼
-                ┌────────────────────────────┐
-                │ vN.metadata.json           │
-                │ - schema                   │
-                │ - partition spec           │
-                │ - current snapshot ID      │
-                └──────────┬─────────────────┘
-                           │
-                           ▼
-                ┌────────────────────────────┐
-                │ snap-XXXX.avro             │
-                │ (snapshot manifest list)   │
-                │ - list of manifests        │
-                └──────────┬─────────────────┘
-                           │
-                           ▼
-                ┌────────────────────────────┐
-                │ manifest files (*-m0.avro) │
-                │ - list of data files       │
-                │ - partition stats         │
-                │ - min/max values          │
-                └──────────┬─────────────────┘
-                           │
-                           ▼
-                ┌────────────────────────────┐
-                │ Data files (Parquet)       │
-                │ - actual table data        │
-                └────────────────────────────┘
-
+</details>
 
 ---
 
-### 5. .*.crc - CRC Checksums
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>5. .*.crc — CRC Checksums</strong></summary>
+<br>
 
 **Data integrity validation files.**
 
@@ -401,11 +431,21 @@ partitions: [
 - Original file: `v1.metadata.json`
 - Checksum file: `.v1.metadata.json.crc`
 
+</details>
+
+</details>
+
 ---
 
-## 🎯 How Metadata Enables Key Features
+<details>
+<summary><strong>🎯 How Metadata Enables Key Features</strong></summary>
+<br>
 
-### Time-Travel Queries
+---
+
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Time-Travel Queries</strong></summary>
+<br>
 
 Each snapshot preserves the entire state of the table at that moment:
 
@@ -445,9 +485,13 @@ Each snapshot preserves the entire state of the table at that moment:
 
 **Old data is never deleted** - it's still in Parquet files, just not referenced by current snapshot.
 
+</details>
+
 ---
 
-### Concurrent Readers Without Locks
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Concurrent Readers Without Locks</strong></summary>
+<br>
 
 Without snapshots (Hadoop/Hive):
 ```
@@ -473,9 +517,13 @@ Reader 3: Reading new snapshot 9056477531426576453 → LATEST
 - Old Parquet files never deleted
 - Readers grab snapshot ID at start, read that version forever
 
+</details>
+
 ---
 
-### Schema Evolution Without Rewrites
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Schema Evolution Without Rewrites</strong></summary>
+<br>
 
 Old way (Hadoop/Hive):
 ```
@@ -509,9 +557,13 @@ No rewrite needed!
 - Metadata tracks which columns exist in which files
 - Query engine handles missing columns
 
+</details>
+
 ---
 
-### Predicate Pushdown & File Pruning
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Predicate Pushdown & File Pruning</strong></summary>
+<br>
 
 Manifest entry files store statistics per column:
 
@@ -519,7 +571,7 @@ Manifest entry files store statistics per column:
 {
   "file_path": "/app/datawarehouse/dw_orders/data/00000-1-abc123.parquet",
   "metrics": {
-    "4": {  # total_amount column
+    "4": {
       "lower_bound": 100.00,
       "upper_bound": 50000.00
     }
@@ -536,9 +588,15 @@ Manifest entry files store statistics per column:
 
 **Result:** Skip files without reading them = massive performance gain
 
+</details>
+
+</details>
+
 ---
 
-## 📊 Metadata File Hierarchy Visualization
+<details>
+<summary><strong>📊 Metadata File Hierarchy Visualization</strong></summary>
+<br>
 
 When you run the ETL, this hierarchy is created:
 
@@ -578,9 +636,13 @@ datawarehouse/
         └── .72f25b2a-0edf-4a81-9bf3-d66d36108d5a-m0.avro.crc
 ```
 
+</details>
+
 ---
 
-## 🔄 ETL to Metadata Generation
+<details>
+<summary><strong>🔄 ETL to Metadata Generation</strong></summary>
+<br>
 
 When the ETL calls `spark_df.writeTo(f"dw_{entity}").createOrReplace()`:
 
@@ -593,9 +655,13 @@ When the ETL calls `spark_df.writeTo(f"dw_{entity}").createOrReplace()`:
 
 All of this happens **automatically** - that's the Iceberg magic!
 
+</details>
+
 ---
 
-## 🔒 ACID Compliance in Apache Iceberg
+<details>
+<summary><strong>🔒 ACID Compliance in Apache Iceberg</strong></summary>
+<br>
 
 ACID is the foundation of reliable databases. Iceberg achieves full ACID compliance through its metadata-based architecture - without traditional locking mechanisms. Let's understand each component:
 
@@ -608,7 +674,11 @@ ACID is the foundation of reliable databases. Iceberg achieves full ACID complia
 | **Isolation** | Concurrent ops don't interfere | Locking & blocking |
 | **Durability** | Changes persist after commit | Write-ahead logs |
 
-### How Iceberg Achieves Atomicity
+---
+
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Atomicity — All or Nothing</strong></summary>
+<br>
 
 **Atomicity = All or nothing. Either entire write succeeds or fails completely.**
 
@@ -667,9 +737,13 @@ vs. Traditional DB:
 - Recovery needed
 ```
 
+</details>
+
 ---
 
-### How Iceberg Achieves Consistency
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Consistency — Schema & Data Integrity</strong></summary>
+<br>
 
 **Consistency = Table schema and data integrity never violated.**
 
@@ -724,9 +798,13 @@ Consistency = Query engine handles missing column 5 in old files
              Always returns consistent schema to user
 ```
 
+</details>
+
 ---
 
-### How Iceberg Achieves Isolation
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Isolation — Snapshot Versioning</strong></summary>
+<br>
 
 **Isolation = Concurrent readers/writers don't see partial updates. Each sees a consistent snapshot.**
 
@@ -778,18 +856,18 @@ Result: NO CONFLICTS, NO LOCKING!
 #### Why This Works:
 ```
 Snapshot = Immutable view of table
-                        ↓
-        v1.metadata.json → snapshots array
-                        ↓
-        [snapshot-100, snapshot-101, snapshot-102]
-                        ↓
-        Each snapshot immutable → Never changes
-                        ↓
-        Reader picks snapshot at start → Uses that forever
-                        ↓
-        Writer creates new snapshot → Doesn't affect old readers
-                        ↓
-        RESULT: Full isolation without locks!
+                    ↓
+    v1.metadata.json → snapshots array
+                    ↓
+    [snapshot-100, snapshot-101, snapshot-102]
+                    ↓
+    Each snapshot immutable → Never changes
+                    ↓
+    Reader picks snapshot at start → Uses that forever
+                    ↓
+    Writer creates new snapshot → Doesn't affect old readers
+                    ↓
+    RESULT: Full isolation without locks!
 ```
 
 #### Concurrent Writers?
@@ -814,9 +892,13 @@ With Iceberg:
 Result: Both writes succeed without conflicts!
 ```
 
+</details>
+
 ---
 
-### How Iceberg Achieves Durability
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Durability — Persistence After Crash</strong></summary>
+<br>
 
 **Durability = Once committed, changes persist even after crash.**
 
@@ -855,9 +937,13 @@ CRC checksums detect corruption:
 }
 ```
 
+</details>
+
 ---
 
-### ACID vs Traditional Databases
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>ACID vs Traditional Databases</strong></summary>
+<br>
 
 #### Traditional Database (PostgreSQL, MySQL):
 ```
@@ -887,9 +973,13 @@ Benefit:
   Zero locks!
 ```
 
+</details>
+
 ---
 
-### Real-World Example: ACID in Action
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Real-World Example: ACID in Action</strong></summary>
+<br>
 
 **Scenario:** Online store with concurrent operations
 
@@ -928,9 +1018,15 @@ Benefit:
 Result: Full ACID + No locks + Optimal concurrency!
 ```
 
+</details>
+
+</details>
+
 ---
 
-## ❄️ Iceberg vs Hadoop/Hive
+<details>
+<summary><strong>❄️ Iceberg vs Hadoop/Hive</strong></summary>
+<br>
 
 | Aspect | Hadoop/Hive | Iceberg |
 |--------|-------------|---------|
@@ -942,9 +1038,13 @@ Result: Full ACID + No locks + Optimal concurrency!
 | **File Statistics** | External metastore | Embedded in metadata |
 | **Data Deletion** | Slow, complex | Tracked in manifest status |
 
+</details>
+
 ---
 
-## 🔍 Files to Examine
+<details>
+<summary><strong>🔍 Files to Examine</strong></summary>
+<br>
 
 To truly understand Iceberg, examine these files in order:
 
@@ -963,11 +1063,19 @@ with open('snap-*.avro', 'rb') as f:
         print(record)
 ```
 
+</details>
+
 ---
 
-## ❓ Q&A: Understanding Iceberg Concepts
+<details>
+<summary><strong>❓ Q&A: Understanding Iceberg Concepts</strong></summary>
+<br>
 
-### Q1. What's a Snapshot?
+---
+
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q1. What's a Snapshot?</strong></summary>
+<br>
 
 **A Snapshot is a point-in-time version of your entire table.**
 
@@ -999,9 +1107,13 @@ Today (Day 5):
 - Enable rollback (revert to previous snapshot if needed)
 - Track complete history of table changes
 
+</details>
+
 ---
 
-### Q2. What's a Manifest List and Manifest File?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q2. What's a Manifest List and Manifest File?</strong></summary>
+<br>
 
 **These are the "glue" between snapshots and actual data files.**
 
@@ -1074,9 +1186,13 @@ v1.metadata.json (root)
                                    └─ data/00003-1-jkl012.parquet
 ```
 
+</details>
+
 ---
 
-### Q3. Can There Be Multiple Snapshots, Manifest Lists, and Manifest Files?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q3. Can There Be Multiple Snapshots, Manifest Lists, and Manifest Files?</strong></summary>
+<br>
 
 **Short Answer: YES to all three! Here's why you might have many:**
 
@@ -1145,9 +1261,13 @@ Date: 2026-04-27 → 50 Parquet files → 1 manifest file
 Total in snapshot: 150 Parquet files, 3 manifest files, 1 manifest list
 ```
 
+</details>
+
 ---
 
-### Q4. Difference Between Manifest List and Manifest File
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q4. Difference Between Manifest List and Manifest File</strong></summary>
+<br>
 
 **This is the key distinction:**
 
@@ -1163,9 +1283,13 @@ Total in snapshot: 150 Parquet files, 3 manifest files, 1 manifest list
 | **Update Frequency** | Created once per write | Created/referenced per write |
 | **Read During Query** | First, to find manifest files | Second, to find Parquet files |
 
+</details>
+
 ---
 
-### Q5. What Happens When You Write New Data?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q5. What Happens When You Write New Data?</strong></summary>
+<br>
 
 **A cascading metadata update happens:**
 
@@ -1198,9 +1322,13 @@ Total in snapshot: 150 Parquet files, 3 manifest files, 1 manifest list
 RESULT: Old snapshot still valid, new snapshot created, concurrent readers unaffected!
 ```
 
+</details>
+
 ---
 
-### Q6. How Does Time-Travel Actually Work?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q6. How Does Time-Travel Actually Work?</strong></summary>
+<br>
 
 **Three-step process:**
 
@@ -1232,9 +1360,13 @@ Manifest Files referenced from April 24 snapshot
 
 **Key Insight:** Parquet files from April 25 & 26 are completely ignored. You only read what existed on April 24!
 
+</details>
+
 ---
 
-### Q7. What's the Purpose of Field IDs in Schema?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q7. What's the Purpose of Field IDs in Schema?</strong></summary>
+<br>
 
 **Field IDs enable schema evolution without rewriting data.**
 
@@ -1278,9 +1410,13 @@ Why Field IDs Work:
   Everything works seamlessly!
 ```
 
+</details>
+
 ---
 
-### Q8. Why Are Manifest Files in Avro Format?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q8. Why Are Manifest Files in Avro Format?</strong></summary>
+<br>
 
 **Three reasons:**
 
@@ -1301,9 +1437,13 @@ Avro: 20 MB of metadata
 When loading all snapshots, this matters!
 ```
 
+</details>
+
 ---
 
-### Q9. Can Multiple Readers Query the Same Table Simultaneously?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q9. Can Multiple Readers Query the Same Table Simultaneously?</strong></summary>
+<br>
 
 **Yes! With complete isolation. Here's how:**
 
@@ -1349,9 +1489,13 @@ Timeline:
 - Readers grab snapshot ID and stick with it
 - No locks needed!
 
+</details>
+
 ---
 
-### Q10. What Happens If You Delete Files?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q10. What Happens If You Delete Files?</strong></summary>
+<br>
 
 **Iceberg tracks file deletion in manifest entries:**
 
@@ -1388,9 +1532,13 @@ If you expire Snapshot 1 and 2:
 - File B still needed (Snapshot 3 references it)
 ```
 
+</details>
+
 ---
 
-### Q11. How Is ACID Achieved Without Locks?
+<details>
+<summary>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Q11. How Is ACID Achieved Without Locks?</strong></summary>
+<br>
 
 **Through atomic metadata swaps:**
 
@@ -1420,9 +1568,15 @@ Iceberg (No Locks):
 
 **Result: ACID without locks!**
 
+</details>
+
+</details>
+
 ---
 
-## 📚 Key Takeaways
+<details>
+<summary><strong>📚 Key Takeaways</strong></summary>
+<br>
 
 1. **Data & Metadata Separation** - Data is immutable, metadata is the mutable interface
 2. **Snapshots Enable Time-Travel** - Each write creates a snapshot; old data never deleted
@@ -1433,7 +1587,8 @@ Iceberg (No Locks):
 7. **Manifest Hierarchy** - Snapshots → Manifest Lists → Manifest Files → Parquets
 8. **File Tracking** - Status codes track file lifecycle (ADDED, EXISTING, DELETED)
 
+</details>
+
 ---
 
-**Project Created:** April 2026  
-**Purpose:** Understanding Apache Iceberg metadata system from first principles
+*Project Created: April 2026 — Purpose: Understanding Apache Iceberg metadata system from first principles*
