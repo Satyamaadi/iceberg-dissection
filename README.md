@@ -342,6 +342,48 @@ partitions: [
 8. Gets list of Parquet files to read
 ```
 
+
+                ┌───────────────────────┐
+                │   Query Engine        │
+                │ (Spark / Athena)      │
+                └──────────┬────────────┘
+                           │
+                           ▼
+                ┌───────────────────────┐
+                │ version-hint.text     │
+                │ (latest version = vN) │
+                └──────────┬────────────┘
+                           │
+                           ▼
+                ┌────────────────────────────┐
+                │ vN.metadata.json           │
+                │ - schema                   │
+                │ - partition spec           │
+                │ - current snapshot ID      │
+                └──────────┬─────────────────┘
+                           │
+                           ▼
+                ┌────────────────────────────┐
+                │ snap-XXXX.avro             │
+                │ (snapshot manifest list)   │
+                │ - list of manifests        │
+                └──────────┬─────────────────┘
+                           │
+                           ▼
+                ┌────────────────────────────┐
+                │ manifest files (*-m0.avro) │
+                │ - list of data files       │
+                │ - partition stats         │
+                │ - min/max values          │
+                └──────────┬─────────────────┘
+                           │
+                           ▼
+                ┌────────────────────────────┐
+                │ Data files (Parquet)       │
+                │ - actual table data        │
+                └────────────────────────────┘
+
+
 ---
 
 ### 5. .*.crc - CRC Checksums
