@@ -1,4 +1,4 @@
-from etl.DailyETL import ETL
+from etl.DailyETL import DailyETL
 
-etl = ETL()
+etl = DailyETL()
 etl.execute()
